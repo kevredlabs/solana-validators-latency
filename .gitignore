@@ -1,0 +1,9 @@
+# Results
+results.csv
+
+# Python
+__pycache__/
+*.py[cod]
+
+# System
+.DS_Store 
