@@ -109,28 +109,6 @@ def test_icmp_latency(ip):
     except Exception:
         return None
 
-# 🔹 3. Measure UDP QUIC Latency (Port 8001)
-def test_quic_latency(ip):
-    try:
-        # Use netcat to test UDP port 8001
-        start_time = time.time()
-        result = subprocess.run([
-            "nc",
-            "-u",
-            "-w", "2",  # 2 seconds timeout
-            "-z",       # scan mode
-            ip,
-            "8001"
-        ], capture_output=True, text=True, timeout=3)
-        
-        if result.returncode == 0:
-            end_time = time.time()
-            return round((end_time - start_time) * 1000, 1)  # Convert to ms
-        return None
-    except Exception as e:
-        print(f"QUIC test failed for {ip}: {str(e)}")
-        return None
-
 def get_ip_info(ip):
     try:
         response = requests.get(f"http://ip-api.com/json/{ip}", timeout=5)
@@ -158,12 +136,11 @@ def main():
         print("No validators found.")
         return
 
-    table = PrettyTable(["Vote Account", "SOL Staked", "IP", "City", "Data Center (ASN)", "Ping (ICMP)", "QUIC (UDP 8001)"])
+    table = PrettyTable(["Vote Account", "SOL Staked", "IP", "City", "Data Center (ASN)", "Ping (ICMP)"])
     results = []
 
     for v in validators:
         icmp_latency = test_icmp_latency(v["ip"])
-        quic_latency = test_quic_latency(v["ip"])
         
         row = [
             v["vote_account"],
@@ -171,8 +148,7 @@ def main():
             v["ip"], 
             v["city"], 
             v["asn"], 
-            f"{icmp_latency} ms" if icmp_latency else "N/A",
-            f"{quic_latency} ms" if quic_latency else "N/A"
+            f"{icmp_latency} ms" if icmp_latency else "N/A"
         ]
         
         table.add_row(row)
@@ -184,7 +160,7 @@ def main():
     if args.csv:
         with open(args.csv, "w", newline="") as f:
             writer = csv.writer(f)
-            writer.writerow(["Vote Account", "SOL Staked", "IP", "City", "Data Center (ASN)", "Ping (ICMP)", "QUIC (UDP 8001)"])
+            writer.writerow(["Vote Account", "SOL Staked", "IP", "City", "Data Center (ASN)", "Ping (ICMP)"])
             writer.writerows(results)
         print(f"✅ Results saved to {args.csv}")
 
