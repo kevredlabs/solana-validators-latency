@@ -22,8 +22,8 @@ docker run --net host --cap-add=NET_RAW --cap-add=NET_ADMIN solana-validators-la
 # Test specific number of validators
 docker run --net host --cap-add=NET_RAW --cap-add=NET_ADMIN solana-validators-latency --limit 5
 
-# Export to CSV
-docker run --net host --cap-add=NET_RAW --cap-add=NET_ADMIN solana-validators-latency --csv results.csv
+# Export to CSV (with volume mount)
+docker run --net host --cap-add=NET_RAW --cap-add=NET_ADMIN -v $(pwd):/app/output solana-validators-latency --csv /app/output/results.csv
 ```
 
 ## Options
